@@ -113,7 +113,46 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-        
+        board.setViewingPerspective(side);
+        boolean[][] merged = new boolean[board.size()][board.size()];
+        for (int r = 2; r >= 0; r--) {
+            for (int c = 0; c <= 3; c++) {
+                Tile t = board.tile(c, r);
+
+                if (t != null) {
+                    // 处理当前tile：判断是否需要move，需要move到哪里，是否merge？
+                    // 向上移动，c不变，r加一
+                    int dc = c, dr = r + 1;
+                    while (dr <= 3) {
+                        Tile dt = board.tile(dc, dr);
+                        if (dt != null) {
+                            // 如果不应该移动到(dc,dr)，dr回退一格
+                            if (merged[dc][dr] == true || dt.value() != t.value()) {
+                                dr--;
+                            }
+                            break;
+                        }
+
+                        if (dr == 3) {
+                            break;
+                        }
+
+                        dr++;
+                    }
+
+                    // 如果发生了移动，设置changed
+                    if (dr != r) {
+                        changed = true;
+                    }
+                    // 如果发生了merge
+                    if (board.move(dc, dr, t)) {
+                        merged[dc][dr] = true;
+                        score += board.tile(dc, dr).value();
+                    }
+                }
+            }
+        }
+        board.setViewingPerspective(Side.NORTH);
 
         checkGameOver();
         if (changed) {
