@@ -1,9 +1,9 @@
 package deque;
 
 public class ArrayDeque<T> implements Deque<T> {
-    public T[] items;
-    public int size;
-    public int front;
+    protected T[] items;
+    protected int size;
+    protected int front;
 
     public ArrayDeque() {
         items = (T[]) new Object[10];
